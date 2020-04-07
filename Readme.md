@@ -289,3 +289,5 @@ and a last check:
 sudo ip netns exec demo ip -o a s eth0
 Device "eth0" does not exist.
 ```
+
+Finally remove the running container: `runc delete demo`.
