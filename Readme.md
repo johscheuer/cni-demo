@@ -71,6 +71,14 @@ sudo tee /opt/cni/netconfs/10-connet.conf <<EOF
 EOF
 ```
 
+With the following command we can check which version CNI support:
+
+```bash
+export CNI_PATH=/opt/cni/bin/
+export CNI_COMMAND=VERSION
+cat /opt/cni/netconfs/10-connet.conf | sudo -E $CNI_PATH/bridge
+```
+
 In order to start a container we need an image, since runc is "only" a container runtime we need to prepull the image an export it;
 If you have docker installed on your system you can use `docker export`, for this demo we will use [img](https://github.com/genuinetools/img):
 
