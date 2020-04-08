@@ -271,7 +271,39 @@ PING 192.168.199.2 (192.168.199.2) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.044/0.047/0.050/0.002 ms
 ```
 
-we can also delete the interface again:
+Let's see if we can also ping an external host:
+
+```bash
+$ sudo ip netns exec demo ping google.de
+ping: google.de: Temporary failure in name resolution
+```
+
+What happened? Probably you would expect that the DNS resolution should work since we specified `8.8.8.8` as DNS server. In the output we see the nameservers in the output and actually the container runtime is expected to use these values, so we need to setup the `resolv.conf`.
+
+```bash
+# See: http://man7.org/linux/man-pages/man8/ip-netns.8.html
+sudo mkdir -p /etc/netns/demo/
+sudo tee /etc/netns/demo/resolv.conf <<<"nameserver 8.8.8.8"
+```
+
+and if we run the command again it will work:
+
+```bash
+sudo ip netns exec demo ping -c 4 google.de
+PING google.de (172.217.22.99) 56(84) bytes of data.
+64 bytes from fra15s18-in-f99.1e100.net (172.217.22.99): icmp_seq=1 ttl=61 time=15.8 ms
+64 bytes from fra15s18-in-f99.1e100.net (172.217.22.99): icmp_seq=2 ttl=61 time=27.0 ms
+64 bytes from fra15s18-in-f99.1e100.net (172.217.22.99): icmp_seq=3 ttl=61 time=16.8 ms
+64 bytes from fra15s18-in-f99.1e100.net (172.217.22.99): icmp_seq=4 ttl=61 time=13.9 ms
+
+--- google.de ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3006ms
+rtt min/avg/max/mdev = 13.957/18.415/27.059/5.095 ms
+```
+
+Note that systems like Kubernetes don't use this mechanism above the mount the `resolv.conf` from a different path inside your containers.
+
+Finally we can also delete the interface again:
 
 ```bash
 export CNI_PATH=/opt/cni/bin/
