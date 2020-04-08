@@ -98,13 +98,6 @@ jq '.process.terminal=false' config.json > config.json.tmp
 mv config.json.tmp config.json
 ```
 
-since we want to install `iperf3` we need to set the root filesystem to writeable:
-
-```bash
-jq '.root.readonly=false' config.json  > config.json.tmp
-mv config.json.tmp config.json
-```
-
 Now we can actually start the container:
 
 ```bash
